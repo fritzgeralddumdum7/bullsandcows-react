@@ -8,14 +8,88 @@ import './App.css'
 
 function App() {
   const [random, setRandom] = useState(0)
-  const [cowCtr, setCowCtr] = useState(0)
-  const [bullCtr, setBullCtr] = useState(0)
   const [guess, setGuess] = useState('')
-  const [isMax, setIsMax] = useState(false)
+  const [errorMsg, setErrorMsg] = useState('')
+  const [isValid, setIsValid] = useState(true)
+  const [isBoard, setIsBoard] = useState(true)
   const [answers, setAnswers] = useState([])
 
+  const keypadClick = (number) => {
+    if (guess.length < 4) {
+      setGuess(prevState => prevState += number.toString())
+    } else {
+      setIsValid(true) 
+    }
+  }
+
+  const backspace = () => {
+    setGuess(guess.slice(0, -1))
+    setIsValid(false)
+  }
+
+  const clear = () => {
+    setGuess('')
+    setIsValid(false)
+  }
+
+  const ErrorMessage = () => {
+    return <p className="error">{errorMsg}</p>
+  }
+
+  const BoardInfo = () => {
+    return (
+      <div className="labels">
+        <p>Guess: {answers.length}</p>
+        <p>Bulls</p>
+        <p>Cows</p>
+      </div>
+    )
+  }
+
+  const submitGuess = () => {
+    setIsValid(false)
+    if (guess.length < 4) {
+      return setErrorMsg('Invalid guess, 4 digit required.')
+    } else if (!guess.trim()) {
+      return setErrorMsg('Please enter your guess.')
+    } 
+
+    const result = validateGuess(random.toString())
+
+    if (answers.length === 0) {
+      setAnswers([result])
+    } else {
+      setAnswers(answer => [...answer, result])
+    }
+
+    if (result.bull === 4) {
+      return setIsBoard(false)
+    }
+
+    setIsValid(true)
+    setGuess('')
+  }
+  
+  const validateGuess = (toBeGuessed) => {
+    let ctrBull = 0
+    let ctrCow = 0
+
+    for (let i = 0; i < toBeGuessed.length; i++) {
+      if (guess.includes(toBeGuessed[i]) && toBeGuessed[i] === guess[i]) {
+        ctrBull++
+      } else if (guess.includes(toBeGuessed[i])) {
+        ctrCow++
+      }
+    }
+
+    return {
+      guess: guess,
+      cow: ctrCow,
+      bull: ctrBull
+    }
+  }
+
   useEffect(() => {
-    // ensure all numbers are unique
     const isValidCombination = () => {
       const generate = Math.floor(1000 + Math.random() * 9000)
   
@@ -27,80 +101,22 @@ function App() {
 
     setRandom(isValidCombination)
   }, [])
-
-  const keypadClick = (number) => {
-    if (guess.length < 4) {
-      setGuess(prevState => prevState += number.toString())
-    } else {
-      setIsMax(true) 
-    }
-  }
-
-  const backspace = () => {
-    setGuess(guess.slice(0, -1))
-    setIsMax(false)
-  }
-
-  const clear = () => {
-    setGuess('')
-  }
-
-  const ErrorMessage = () => {
-    return <p>Maximum of 4 digits only.</p>
-  }
-
-  const BoardInfo = ({ score }) => {
-    return (
-      <div className="labels">
-        <p>Guess: {score}</p>
-        <p>Bulls</p>
-        <p>Cows</p>
-      </div>
-    )
-  }
-
-  const submitGuess = () => {
-    const toBeGuessed = random.toString()
-    let ctrCow = 0
-    let ctrBull = 0
-
-    for (let i = 0; i < toBeGuessed.length; i++) {
-      if (guess.includes(toBeGuessed[i]) && toBeGuessed[i] === guess[i]) {
-        ctrBull++
-      } else if (guess.includes(toBeGuessed[i])) {
-        ctrCow++
-      }
-    }
-    
-    setBullCtr(ctrBull)
-    setCowCtr(ctrCow)
-
-    if (answers.length === 0) {
-      setAnswers([{
-        guess: guess,
-        cow: cowCtr,
-        bull: bullCtr
-      }])
-    } else {
-      setAnswers(answer => [...answer, {
-        guess: guess,
-        cow: cowCtr,
-        bull: bullCtr
-      }])
-    }
-
-    setIsMax(false)
-    setGuess('')
-  }
-
+  
   return (
     <div className="container">
       <div>
-        <InputField board={true} guess={guess} />
-        <InputField guess={guess} />
-        { isMax && <ErrorMessage /> }
+        <InputField 
+          board={isBoard} 
+          guess={guess} 
+        />
+        <InputField 
+          guess={guess} 
+        />
+        { !isValid && <ErrorMessage /> }
         <div className="keypad-container">
-          <Keypad keypadClick={keypadClick} />
+          <Keypad 
+            keypadClick={keypadClick} 
+          />
           <ActionButton 
             text="Clear" 
             actionListener={clear}
@@ -117,10 +133,7 @@ function App() {
         </div>
       </div>
       <div>
-        <BoardInfo 
-          label="Guess"
-          score={answers.length} 
-        />
+        <BoardInfo />
         <AnswerList answers={answers} />
       </div>
     </div>
