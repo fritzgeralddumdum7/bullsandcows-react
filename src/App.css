@@ -1,0 +1,81 @@
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.container {
+    display: flex;
+    gap: 15px;
+    align-items: flex-end;
+}
+
+.keypad-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 10px;
+}
+
+.clear {
+    grid-column: span 2;
+}
+
+.guess {
+    grid-column: span 3;
+}
+
+.keypad-container button {
+    padding: 10px 20px;
+    letter-spacing: 2px;
+}
+
+.information-board {
+    width: 300px;
+    border: 1px solid gray;
+    height: 297px;
+    border-radius: 2px;
+    overflow: auto;
+}
+
+.guess-input {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    height: 50px;
+    border: 1px solid gray;
+    margin: 10px 0;
+    padding-right: 10px;
+    border-radius: 2px;
+    width: -webkit-fill-available !important;
+    text-align: right;
+    letter-spacing: 4px;
+}
+
+.labels {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 25px;
+    height: 41px;
+}
+
+.answer-container {
+    display: flex;
+    flex-direction: row;
+    text-align: center;
+    padding: 15px 0;
+    padding-bottom: unset;
+}
+
+.guess-container {
+    flex-basis: 40%;
+}
+
+.bull-container {
+    flex-basis: 30%;
+}
+
+.cow-container {
+    flex-basis: 30%;
+}
