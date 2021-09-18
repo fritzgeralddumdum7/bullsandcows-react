@@ -1,4 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { 
+  useEffect, 
+  useState 
+} from 'react'
 import Keypad from './Keypad'
 import InputField from './components/InputField'
 import ActionButton from './components/ActionButton'
@@ -8,37 +11,28 @@ import './App.css'
 
 function App() {
   const [random, setRandom] = useState(0)
-  const [cowCtr, setCowCtr] = useState(0)
-  const [bullCtr, setBullCtr] = useState(0)
   const [guess, setGuess] = useState('')
-  const [isMax, setIsMax] = useState(false)
+  const [isValid, setIsValid] = useState(true)
+  const [errorMsg, setErrorMsg] = useState(false)
+  const [isBoard, setIsBoard] = useState(true)
   const [answers, setAnswers] = useState([])
 
-  useEffect(() => {
-    // ensure all numbers are unique
-    const isValidCombination = () => {
-      const generate = Math.floor(1000 + Math.random() * 9000)
-  
-      if (!/(.).*?\1/.test(generate)) {
-        return generate
-      } 
-      return isValidCombination()
-    }
-
-    setRandom(isValidCombination)
-  }, [])
-
   const keypadClick = (number) => {
+    setIsValid(true)
     if (guess.length < 4) {
+      if (guess.includes(number)) {
+        setIsValid(false)
+        return setErrorMsg('Digit already exist.')
+      }
       setGuess(prevState => prevState += number.toString())
     } else {
-      setIsMax(true) 
+      setIsValid(false)
+      setErrorMsg('Maximum of 4 digits only.')
     }
   }
 
   const backspace = () => {
     setGuess(guess.slice(0, -1))
-    setIsMax(false)
   }
 
   const clear = () => {
@@ -46,7 +40,7 @@ function App() {
   }
 
   const ErrorMessage = () => {
-    return <p>Maximum of 4 digits only.</p>
+    return <p className="error">{errorMsg}</p>
   }
 
   const BoardInfo = ({ score }) => {
@@ -60,45 +54,39 @@ function App() {
   }
 
   const submitGuess = () => {
-    const toBeGuessed = random.toString()
-    let ctrCow = 0
-    let ctrBull = 0
+    setIsValid(false)
+    if (guess.length < 4) {
+      return setErrorMsg('Invalid guess, 4 digit required.')
+    } else if (!guess.trim()) {
+      return setErrorMsg('Please enter your guess.')
+    } 
 
-    for (let i = 0; i < toBeGuessed.length; i++) {
-      if (guess.includes(toBeGuessed[i]) && toBeGuessed[i] === guess[i]) {
-        ctrBull++
-      } else if (guess.includes(toBeGuessed[i])) {
-        ctrCow++
-      }
-    }
-    
-    setBullCtr(ctrBull)
-    setCowCtr(ctrCow)
+    const result = validateGuess(random.toString(), guess)
 
     if (answers.length === 0) {
-      setAnswers([{
-        guess: guess,
-        cow: cowCtr,
-        bull: bullCtr
-      }])
+      setAnswers([result])
     } else {
-      setAnswers(answer => [...answer, {
-        guess: guess,
-        cow: cowCtr,
-        bull: bullCtr
-      }])
+      setAnswers(answer => [...answer, result])
     }
 
-    setIsMax(false)
+    if (result.bull === 4) {
+      return setIsBoard(false)
+    }
+
+    setIsValid(true)
     setGuess('')
   }
 
+  useEffect(() => {
+    setRandom(generateRandomNumber())
+  }, [])
+  
   return (
     <div className="container">
       <div>
-        <InputField board={true} guess={guess} />
+        <InputField board={isBoard} guess={guess} />
         <InputField guess={guess} />
-        { isMax && <ErrorMessage /> }
+        { !isValid && <ErrorMessage /> }
         <div className="keypad-container">
           <Keypad keypadClick={keypadClick} />
           <ActionButton 
@@ -128,3 +116,37 @@ function App() {
 }
 
 export default App
+
+const validateGuess = (toBeGuessed, guess) => {
+  let ctrBull = 0
+  let ctrCow = 0
+
+  for (let i = 0; i < toBeGuessed.length; i++) {
+    if (guess.includes(toBeGuessed[i]) && toBeGuessed[i] === guess[i]) {
+      ctrBull++
+    } else if (guess.includes(toBeGuessed[i])) {
+      ctrCow++
+    }
+  }
+
+  return {
+    guess: guess,
+    cow: ctrCow,
+    bull: ctrBull
+  }
+}
+
+const generateRandomNumber = () => {
+  const randomCombination = Math.floor(1000 + Math.random() * 9000)
+  return isUnique(randomCombination) ? randomCombination : generateRandomNumber()
+}
+
+const isUnique = (combination) => {
+  return !/(.).*?\1/.test(combination)
+}
+
+export {
+  validateGuess,
+  generateRandomNumber,
+  isUnique
+}
