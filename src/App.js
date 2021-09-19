@@ -12,6 +12,7 @@ import './App.css'
 function App() {
   const [random, setRandom] = useState(0)
   const [guess, setGuess] = useState('')
+  const [gameLabel, setGameLabel] = useState('BULLS & COWS')
   const [isValid, setIsValid] = useState(true)
   const [errorMsg, setErrorMsg] = useState(false)
   const [isBoard, setIsBoard] = useState(true)
@@ -33,10 +34,12 @@ function App() {
 
   const backspace = () => {
     setGuess(guess.slice(0, -1))
+    setIsValid(true)
   }
 
   const clear = () => {
     setGuess('')
+    setIsValid(true)
   }
 
   const ErrorMessage = () => {
@@ -55,6 +58,7 @@ function App() {
 
   const submitGuess = () => {
     setIsValid(false)
+
     if (guess.length < 4) {
       return setErrorMsg('Invalid guess, 4 digit required.')
     } else if (!guess.trim()) {
@@ -66,15 +70,16 @@ function App() {
     if (answers.length === 0) {
       setAnswers([result])
     } else {
-      setAnswers(answer => [...answer, result])
+      setAnswers(answer => [result, ...answer])
     }
 
     if (result.bull === 4) {
-      return setIsBoard(false)
+      setGameLabel('BULLSEYE!')
+      setIsBoard(false)
+    } else {
+      setGuess('')
     }
-
     setIsValid(true)
-    setGuess('')
   }
 
   useEffect(() => {
@@ -82,34 +87,37 @@ function App() {
   }, [])
   
   return (
-    <div className="container">
-      <div>
-        <InputField board={isBoard} guess={guess} />
-        <InputField guess={guess} />
-        { !isValid && <ErrorMessage /> }
-        <div className="keypad-container">
-          <Keypad keypadClick={keypadClick} />
-          <ActionButton 
-            text="Clear" 
-            actionListener={clear}
-          />
-          <ActionButton 
-            text="Back" 
-            actionListener={backspace}
-          />
-          <ActionButton 
-            text="Guess" 
-            actionListener={submitGuess}
-            customClass="guess"
-          />
+    <div className="panel-body">
+      <div className="container">
+        <div>
+          <InputField board={isBoard} guess={guess} />
+          <InputField guess={guess} />
+          { !isValid && <ErrorMessage /> }
+          <div className="keypad-container">
+            <Keypad keypadClick={keypadClick} />
+            <ActionButton 
+              text="Clear" 
+              actionListener={clear}
+            />
+            <ActionButton 
+              text="Back" 
+              actionListener={backspace}
+            />
+            <ActionButton 
+              text="Guess" 
+              actionListener={submitGuess}
+              customClass="guess"
+            />
+          </div>
         </div>
-      </div>
-      <div>
-        <BoardInfo 
-          label="Guess"
-          score={answers.length} 
-        />
-        <AnswerList answers={answers} />
+        <div style={{textAlign: 'center'}}>
+          <h2>{gameLabel}</h2>
+          <BoardInfo 
+            label="Guess"
+            score={answers.length} 
+          />
+          <AnswerList answers={answers} />
+        </div>
       </div>
     </div>
   ) 
