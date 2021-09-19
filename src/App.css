@@ -4,12 +4,23 @@ body {
     justify-content: center;
     height: 100vh;
     overflow: hidden;
+    font-family: 'Chakra Petch', sans-serif;
+    letter-spacing: 1px;
 }
 
 .container {
     display: flex;
     gap: 15px;
     align-items: flex-end;
+    padding: 15px;
+    background: #7C94AC;
+    border-top: 2px solid #4C647C;
+    border-left: 2px solid #4C647C;
+    border-right: 2px solid #BCCCD4;
+    border-bottom: 2px solid #BCCCD4;
+}
+
+.panel-body {
     box-shadow: inset 0.2em 0.2em 0.2em 0 rgba(255 ,255, 255, 0.4), inset -0.2em -0.2em 0.2em 0 rgba(0,0,0,0.5);
     padding: 15px;
     background: #7C94AC;
@@ -30,17 +41,26 @@ body {
 }
 
 .keypad-container button {
-    padding: 10px 20px;
+    padding: 15px 20px;
     letter-spacing: 2px;
+    background-color: #7C94AC;
+    box-shadow: inset 0.1em 0.1em 0.1em 0 rgba(255 ,255, 255, 0.4), inset -0.1em -0.1em 0.1em 0 rgba(0,0,0,0.5);
+    border: none;
+    cursor: pointer;
+    font-family: 'Chakra Petch', sans-serif;
 }
 
 .information-board {
     width: 300px;
     border: 1px solid gray;
-    height: 297px;
+    height: 270px;
     border-radius: 2px;
     overflow: auto;
     background: #7EF7FC;
+    border-top: 2px solid #4C647C;
+    border-left: 2px solid #4C647C;
+    border-right: 2px solid #BCCCD4;
+    border-bottom: 2px solid #BCCCD4;
 }
 
 .guess-input {
@@ -56,6 +76,12 @@ body {
     text-align: right;
     letter-spacing: 4px;
     outline: none;
+    font-family: 'Chakra Petch', sans-serif;
+    text-align: center;
+    border-top: 2px solid #4C647C;
+    border-left: 2px solid #4C647C;
+    border-right: 2px solid #BCCCD4;
+    border-bottom: 2px solid #BCCCD4;
 }
 
 .guess-input:first-child {
@@ -75,9 +101,10 @@ body {
     text-align: center;
     padding: 10px;
     margin: 5px;
+    gap: 40px;
 }
 
-.answer-container:last-child {
+.answer-container:first-child {
     background: #4C647C;
     color: #FCFCFC
 }
